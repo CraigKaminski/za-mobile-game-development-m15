@@ -1,8 +1,15 @@
-import { Board } from './Board';
 import { Game } from '../states/Game';
+import { Board } from './Board';
 
 interface IItemData {
   asset: string;
+  attack: number;
+  col: number;
+  defense: number;
+  gold: number;
+  health: number;
+  row: number;
+  type: string;
 }
 
 export class Item extends Phaser.Sprite {
@@ -11,10 +18,7 @@ export class Item extends Phaser.Sprite {
   private state: Game;
 
   constructor(state: Game, data: IItemData) {
-    const position = {
-      x: 10,
-      y: 10,
-    };
+    const position = state.board.getXYFromRowCol(data);
 
     super(state.game, position.x, position.y, data.asset);
 
@@ -23,5 +27,18 @@ export class Item extends Phaser.Sprite {
     this.board = state.board;
 
     this.anchor.setTo(0.5);
+
+    this.inputEnabled = true;
+    this.events.onInputDown.add(this.collect, this);
+  }
+
+  private collect() {
+    if (this.data.type === 'consumable') {
+      this.state.playerStats.health += this.data.health;
+      this.state.playerStats.attack += this.data.attack;
+      this.state.playerStats.defense += this.data.defense;
+      this.state.playerStats.gold += this.data.gold;
+      this.kill();
+    }
   }
 }

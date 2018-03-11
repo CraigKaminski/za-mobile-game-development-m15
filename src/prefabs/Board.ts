@@ -29,10 +29,10 @@ export class Board {
         tile.data.col = j;
         this.state.backgroundTiles.add(tile);
         tile.inputEnabled = true;
-        tile.events.onInputDown.add((tile: Phaser.Sprite) => {
-          tile.alpha = 0.5;
-          console.log(`row: ${tile.data.row} col: ${tile.data.col}`);
-          console.log(this.getSurrounding(tile));
+        tile.events.onInputDown.add((targetTile: Phaser.Sprite) => {
+          targetTile.alpha = 0.5;
+          console.log(`row: ${targetTile.data.row} col: ${targetTile.data.col}`);
+          console.log(this.getSurrounding(targetTile));
         }, this);
       }
     }
@@ -61,5 +61,12 @@ export class Board {
     });
 
     return adjacentTiles;
+  }
+
+  public getXYFromRowCol(cell: { col: number; row: number }) {
+    return {
+      x: cell.col * this.tileSize + this.tileSize / 2,
+      y: cell.row * this.tileSize + this.tileSize / 2,
+    };
   }
 }
