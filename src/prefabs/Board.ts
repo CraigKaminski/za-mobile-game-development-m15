@@ -28,7 +28,38 @@ export class Board {
         tile.data.row = i;
         tile.data.col = j;
         this.state.backgroundTiles.add(tile);
+        tile.inputEnabled = true;
+        tile.events.onInputDown.add((tile: Phaser.Sprite) => {
+          tile.alpha = 0.5;
+          console.log(`row: ${tile.data.row} col: ${tile.data.col}`);
+          console.log(this.getSurrounding(tile));
+        }, this);
       }
     }
+  }
+
+  public getSurrounding(tile: Phaser.Sprite) {
+    const adjacentTiles: Array<{ row: number; col: number }> = [];
+    const relativePositions: Array<{ r: number; c: number }> = [
+      { r: 1, c: -1 },
+      { r: 1, c: 0 },
+      { r: 1, c: 1 },
+      { r: 0, c: -1 },
+      { r: 0, c: 1 },
+      { r: -1, c: -1 },
+      { r: -1, c: 0 },
+      { r: -1, c: 1 },
+    ];
+
+    relativePositions.forEach((relPos) => {
+      const relRow = tile.data.row + relPos.r;
+      const relCol = tile.data.col + relPos.c;
+
+      if (relRow >= 0 && relRow < this.rows && relCol >= 0 && relCol < this.cols) {
+        adjacentTiles.push({ row: relRow, col: relCol });
+      }
+    });
+
+    return adjacentTiles;
   }
 }
