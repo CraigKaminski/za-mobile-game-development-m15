@@ -13,6 +13,7 @@ export class Board {
   public tileSize: number;
   private game: Phaser.Game;
   private state: Game;
+  private mapElements: Phaser.Group;
 
   constructor(state: Game, data: IBoardData) {
     this.state = state;
@@ -21,6 +22,7 @@ export class Board {
     this.cols = data.cols;
     this.numCells = this.rows * this.cols;
     this.tileSize = data.tileSize;
+    this.mapElements = this.state.mapElements;
 
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
@@ -36,6 +38,31 @@ export class Board {
         }, this);
       }
     }
+  }
+
+  public getFreeCell() {
+    let freeCell: { row: number, col: number } | undefined;
+    let foundCell = false;
+    const len = this.mapElements.length;
+
+    while (!freeCell) {
+      const row = this.randomBetween(0, this.rows, true);
+      const col = this.randomBetween(0, this.cols, true);
+
+      for (let i = 0; i < len; i++) {
+        const mapElement = (this.mapElements.children[i] as Phaser.Sprite);
+        if (mapElement.alive && mapElement.data.row === row && mapElement.data.col === col) {
+          foundCell = true;
+          break;
+        }
+      }
+
+      if (!foundCell) {
+        freeCell = { row, col };
+      }
+    }
+
+    return freeCell;
   }
 
   public getSurrounding(tile: Phaser.Sprite) {
@@ -68,5 +95,15 @@ export class Board {
       x: cell.col * this.tileSize + this.tileSize / 2,
       y: cell.row * this.tileSize + this.tileSize / 2,
     };
+  }
+
+  public randomBetween(a: number, b: number, isInteger: boolean) {
+    let numBetween = a + Math.random() * (b - a);
+
+    if (isInteger) {
+      numBetween = Math.floor(numBetween);
+    }
+
+    return numBetween;
   }
 }
