@@ -15,10 +15,21 @@ interface IPlayserStats {
 }
 
 export class Game extends Phaser.State {
+  public attackIcon: Phaser.Sprite;
+  public attackLabel: Phaser.Text;
   public backgroundTiles: Phaser.Group;
   public board: Board;
+  public charImage: Phaser.Sprite;
   public currentLevel: number;
+  public defenseIcon: Phaser.Sprite;
+  public defenseLabel: Phaser.Text;
+  public goldIcon: Phaser.Sprite;
+  public goldLabel: Phaser.Text;
+  public healthIcon: Phaser.Sprite;
+  public healthLabel: Phaser.Text;
+  public levelLabel: Phaser.Text;
   public mapElements: Phaser.Group;
+  public panel: Phaser.Sprite;
   public playerStats: IPlayserStats;
   public readonly Cols = 6;
   public readonly Rows = 8;
@@ -60,6 +71,8 @@ export class Game extends Phaser.State {
     });
 
     this.mapElements.add(item);
+
+    this.initGui();
   }
 
   public gameOver() {
@@ -71,5 +84,50 @@ export class Game extends Phaser.State {
       currentLevel: this.currentLevel + 1,
       playerStats: this.playerStats,
     });
+  }
+
+  public refreshStats() {
+    this.healthLabel.text = Math.ceil(this.playerStats.health).toString();
+    this.attackLabel.text = Math.ceil(this.playerStats.attack).toString();
+    this.defenseLabel.text = Math.ceil(this.playerStats.defense).toString();
+    this.goldLabel.text = Math.ceil(this.playerStats.gold).toString();
+
+    this.levelLabel.text = 'Floor ' + this.currentLevel;
+  }
+
+  private initGui() {
+    const y = this.TileSize * this.Rows;
+
+    const bitmapRect = this.add.bitmapData(this.game.width, this.game.height - y);
+    bitmapRect.ctx.fillStyle = '#000058';
+    bitmapRect.ctx.fillRect(0, 0, this.game.width, this.game.height - y);
+
+    this.panel = this.add.sprite(0, y, bitmapRect);
+
+    const style = {
+      align: 'left',
+      fill: '#fff',
+      font: '16px Prstart',
+    };
+
+    this.healthIcon = this.add.sprite(this.game.width - 110, y - 10 + this.TileSize / 2, 'heart');
+    this.healthLabel = this.add.text(this.game.width - 70, y - 10 + this.TileSize / 2 + 5, '', style);
+
+    this.attackIcon = this.add.sprite(this.game.width - 110, y - 10 + 2 * this.TileSize / 2, 'attack');
+    this.attackLabel = this.add.text(this.game.width - 70, y - 10 + 2 * this.TileSize / 2 + 5, '', style);
+
+    this.defenseIcon = this.add.sprite(this.game.width - 110, y - 10 + 3 * this.TileSize / 2, 'defense');
+    this.defenseLabel = this.add.text(this.game.width - 70, y - 10 + 3 * this.TileSize / 2 + 5, '', style);
+
+    this.goldIcon = this.add.sprite(this.game.width - 110, y - 10 + 4 * this.TileSize / 2, 'gold');
+    this.goldLabel = this.add.text(this.game.width - 70, y - 10 + 4 * this.TileSize / 2 + 5, '', style);
+
+    this.charImage = this.add.sprite(30, y + 16, 'profile');
+
+    style.font = '10px Prstart';
+
+    this.levelLabel = this.add.text(45, this.game.height - this.TileSize / 2, '', style);
+
+    this.refreshStats();
   }
 }

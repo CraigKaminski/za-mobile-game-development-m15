@@ -38,6 +38,9 @@ export class Item extends Phaser.Sprite {
       this.state.playerStats.attack += this.data.attack;
       this.state.playerStats.defense += this.data.defense;
       this.state.playerStats.gold += this.data.gold;
+
+      this.state.refreshStats();
+
       this.kill();
     }
   }
