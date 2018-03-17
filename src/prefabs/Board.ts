@@ -101,6 +101,47 @@ export class Board {
     };
   }
 
+  public initExit() {
+    const startCell = this.getFreeCell();
+    const start = new Item(this.state, {
+      asset: 'start',
+      attack: 0,
+      col: startCell.col,
+      defense: 0,
+      gold: 0,
+      health: 0,
+      row: startCell.row,
+      type: 'start',
+    });
+    this.mapElements.add(start);
+
+    const exitCell = this.getFreeCell();
+    const exit = new Item(this.state, {
+      asset: 'exit',
+      attack: 0,
+      col: exitCell.col,
+      defense: 0,
+      gold: 0,
+      health: 0,
+      row: exitCell.row,
+      type: 'exit',
+    });
+    this.mapElements.add(exit);
+
+    const keyCell = this.getFreeCell();
+    const key = new Item(this.state, {
+      asset: 'key',
+      attack: 0,
+      col: keyCell.col,
+      defense: 0,
+      gold: 0,
+      health: 0,
+      row: keyCell.row,
+      type: 'key',
+    });
+    this.mapElements.add(key);
+  }
+
   public initItems() {
     const numItems = Math.round(
       this.numCells * this.levelData.coefs.itemOccupation *
@@ -134,6 +175,7 @@ export class Board {
 
   public initLevel() {
     this.initItems();
+    this.initExit();
   }
 
   public randomBetween(a: number, b: number, isInteger: boolean = false) {
