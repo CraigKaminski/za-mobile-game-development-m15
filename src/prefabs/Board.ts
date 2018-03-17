@@ -1,4 +1,5 @@
 import { Game, IGameBaseData } from '../states/Game';
+import { Enemy } from './Enemy';
 import { Item } from './Item';
 
 interface IBoardData {
@@ -101,6 +102,38 @@ export class Board {
     };
   }
 
+  public initEnemies() {
+    const numEnemies = Math.round(
+      this.numCells * this.levelData.coefs.enemyOccupation *
+      this.randomBetween(1 - this.levelData.coefs.enemyVariation, 1 + this.levelData.coefs.enemyVariation));
+
+    let i = 0;
+    let type: number;
+    let enemyData: any;
+    let cell: { col: number, row: number };
+    let newEnemy: Enemy;
+
+    while (i < numEnemies) {
+      type = this.randomBetween(0, this.levelData.itemTypes.length, true);
+      enemyData = { ...this.levelData.enemyTypes[type] };
+
+      const coef = Math.pow(this.levelData.coefs.levelIncrement, this.state.currentLevel);
+      enemyData.attack = Math.round(coef * enemyData.attack);
+      enemyData.defense = Math.round(coef * enemyData.defense);
+      enemyData.gold = Math.round(coef * enemyData.gold);
+      enemyData.health = Math.round(coef * enemyData.health);
+
+      cell = this.getFreeCell();
+      enemyData.row = cell.row;
+      enemyData.col = cell.col;
+
+      newEnemy = new Enemy(this.state, enemyData);
+      this.mapElements.add(newEnemy);
+
+      i++;
+    }
+  }
+
   public initExit() {
     const startCell = this.getFreeCell();
     const start = new Item(this.state, {
@@ -175,6 +208,7 @@ export class Board {
 
   public initLevel() {
     this.initItems();
+    this.initEnemies();
     this.initExit();
   }
 
