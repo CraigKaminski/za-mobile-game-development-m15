@@ -50,6 +50,7 @@ export class Game extends Phaser.State {
   public healthIcon: Phaser.Sprite;
   public healthLabel: Phaser.Text;
   public levelData: IGameBaseData;
+  public keyIcon: Phaser.Sprite;
   public levelLabel: Phaser.Text;
   public mapElements: Phaser.Group;
   public panel: Phaser.Sprite;
@@ -108,6 +109,8 @@ export class Game extends Phaser.State {
     this.goldLabel.text = Math.ceil(this.playerStats.gold).toString();
 
     this.levelLabel.text = 'Floor ' + this.currentLevel;
+
+    this.keyIcon.visible = this.playerStats.hasKey;
   }
 
   private initGui() {
@@ -142,6 +145,9 @@ export class Game extends Phaser.State {
     style.font = '10px Prstart';
 
     this.levelLabel = this.add.text(45, this.game.height - this.TileSize / 2, '', style);
+
+    this.keyIcon = this.add.sprite(this.game.width - 180, y - 10 + this.TileSize / 2, 'key');
+    this.keyIcon.scale.setTo(0.6);
 
     this.refreshStats();
   }

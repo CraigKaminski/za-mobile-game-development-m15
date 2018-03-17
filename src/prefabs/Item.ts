@@ -43,5 +43,21 @@ export class Item extends Phaser.Sprite {
 
       this.kill();
     }
+
+    if (this.data.type === 'key') {
+      this.state.playerStats.hasKey = true;
+
+      this.state.refreshStats();
+
+      this.kill();
+    }
+
+    if (this.data.type === 'exit') {
+      if (this.state.playerStats.hasKey) {
+        this.state.playerStats.hasKey = false;
+        this.state.nextLevel();
+        return;
+      }
+    }
   }
 }
