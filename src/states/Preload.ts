@@ -25,6 +25,8 @@ export class Preload extends Phaser.State {
     this.load.image('mummy', 'images/mummyjewel.png');
     this.load.image('demon', 'images/demon.png');
     this.load.image('orc', 'images/orc.png');
+
+    this.load.text('gameBaseData', 'data/gameBaseData.json');
   }
 
   public create() {
