@@ -1,9 +1,11 @@
-import { Game } from '../states/Game';
+import { Game, IGameBaseData } from '../states/Game';
+import { Item } from './Item';
 
 interface IBoardData {
   cols: number;
   rows: number;
   tileSize: number;
+  levelData: IGameBaseData;
 }
 
 export class Board {
@@ -12,8 +14,9 @@ export class Board {
   public rows: number;
   public tileSize: number;
   private game: Phaser.Game;
-  private state: Game;
+  private levelData: IGameBaseData;
   private mapElements: Phaser.Group;
+  private state: Game;
 
   constructor(state: Game, data: IBoardData) {
     this.state = state;
@@ -23,6 +26,7 @@ export class Board {
     this.numCells = this.rows * this.cols;
     this.tileSize = data.tileSize;
     this.mapElements = this.state.mapElements;
+    this.levelData = data.levelData;
 
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
@@ -33,8 +37,8 @@ export class Board {
         tile.inputEnabled = true;
         tile.events.onInputDown.add((targetTile: Phaser.Sprite) => {
           targetTile.alpha = 0.5;
-          console.log(`row: ${targetTile.data.row} col: ${targetTile.data.col}`);
-          console.log(this.getSurrounding(targetTile));
+          // console.log(`row: ${targetTile.data.row} col: ${targetTile.data.col}`);
+          // console.log(this.getSurrounding(targetTile));
         }, this);
       }
     }
@@ -42,10 +46,10 @@ export class Board {
 
   public getFreeCell() {
     let freeCell: { row: number, col: number } | undefined;
-    let foundCell = false;
     const len = this.mapElements.length;
 
     while (!freeCell) {
+      let foundCell = false;
       const row = this.randomBetween(0, this.rows, true);
       const col = this.randomBetween(0, this.cols, true);
 
@@ -97,7 +101,42 @@ export class Board {
     };
   }
 
-  public randomBetween(a: number, b: number, isInteger: boolean) {
+  public initItems() {
+    const numItems = Math.round(
+      this.numCells * this.levelData.coefs.itemOccupation *
+      this.randomBetween(1 - this.levelData.coefs.itemVariation, 1 + this.levelData.coefs.itemVariation));
+
+    let i = 0;
+    let type: number;
+    let itemData: any;
+    let cell: { col: number, row: number };
+    let newItem: Item;
+
+    while (i < numItems) {
+      type = this.randomBetween(0, this.levelData.itemTypes.length, true);
+      itemData = { ...this.levelData.itemTypes[type] };
+
+      itemData.attack = itemData.attack || 0;
+      itemData.defense = itemData.defense || 0;
+      itemData.gold = itemData.gold || 0;
+      itemData.health = itemData.health || 0;
+
+      cell = this.getFreeCell();
+      itemData.row = cell.row;
+      itemData.col = cell.col;
+
+      newItem = new Item(this.state, itemData);
+      this.mapElements.add(newItem);
+
+      i++;
+    }
+  }
+
+  public initLevel() {
+    this.initItems();
+  }
+
+  public randomBetween(a: number, b: number, isInteger: boolean = false) {
     let numBetween = a + Math.random() * (b - a);
 
     if (isInteger) {

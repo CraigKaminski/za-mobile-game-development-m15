@@ -1,6 +1,28 @@
 import { Board } from '../prefabs/Board';
 import { Item } from '../prefabs/Item';
 
+export interface IGameBaseData {
+  coefs: {
+    enemyOccupation: number;
+    enemyVariation: number;
+    itemOccupation: number;
+    itemVariation: number;
+    levelIncrement: number;
+  };
+  enemyTypes: Array<{
+    asset: string;
+    attack: number;
+    defense: number;
+    gold: number;
+    health: number;
+  }>;
+  itemTypes: Array<{
+    asset: string;
+    health: number;
+    type: string;
+  }>;
+}
+
 interface IGameData {
   currentLevel?: number;
   playerStats?: IPlayserStats;
@@ -27,6 +49,7 @@ export class Game extends Phaser.State {
   public goldLabel: Phaser.Text;
   public healthIcon: Phaser.Sprite;
   public healthLabel: Phaser.Text;
+  public levelData: IGameBaseData;
   public levelLabel: Phaser.Text;
   public mapElements: Phaser.Group;
   public panel: Phaser.Sprite;
@@ -53,24 +76,16 @@ export class Game extends Phaser.State {
 
     this.mapElements = this.add.group();
 
+    this.levelData = JSON.parse(this.cache.getText('gameBaseData'));
+
     this.board = new Board(this, {
       cols: this.Cols,
+      levelData: this.levelData,
       rows: this.Rows,
       tileSize: this.TileSize,
     });
 
-    const item = new Item(this, {
-      asset: 'sword',
-      attack: 0,
-      col: 2,
-      defense: 1,
-      gold: 10,
-      health: 10,
-      row: 3,
-      type: 'consumable',
-    });
-
-    this.mapElements.add(item);
+    this.board.initLevel();
 
     this.initGui();
   }
