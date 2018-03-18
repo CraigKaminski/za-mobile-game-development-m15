@@ -75,6 +75,40 @@ export class Enemy extends Phaser.Sprite {
     this.addChild(this.defenseLabel);
 
     this.refreshStats();
+
+    this.inputEnabled = true;
+    this.events.onInputDown.add(this.attack, this);
+  }
+
+  public attack() {
+    const attacker = this.state.playerStats;
+    const attacked = this.data;
+
+    const damageAttacked = Math.max(0.5, attacker.attack * Math.random() - attacked.defense * Math.random());
+    const damageAttacker = Math.max(0.5, attacked.attack * Math.random() - attacker.defense * Math.random());
+
+    attacked.health -= damageAttacked;
+    attacker.health -= damageAttacker;
+
+    const attackTween = this.game.add.tween(this);
+    attackTween.to({tint: 0XFF0000}, 300);
+    attackTween.onComplete.add(() => {
+      this.tint = 0XFFFFFF;
+
+      this.refreshStats();
+      this.state.refreshStats();
+
+      if (attacked.health <= 0) {
+        this.state.playerStats.gold += attacked.gold;
+        this.kill();
+      }
+
+      if (attacker.health <= 0) {
+        this.state.gameOver();
+        return;
+      }
+    }, this);
+    attackTween.start();
   }
 
   public refreshStats() {
