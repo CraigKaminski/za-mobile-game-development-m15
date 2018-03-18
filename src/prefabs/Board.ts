@@ -35,12 +35,14 @@ export class Board {
         tile.data.row = i;
         tile.data.col = j;
         this.state.backgroundTiles.add(tile);
+        /*
         tile.inputEnabled = true;
         tile.events.onInputDown.add((targetTile: Phaser.Sprite) => {
           targetTile.alpha = 0.5;
-          // console.log(`row: ${targetTile.data.row} col: ${targetTile.data.col}`);
-          // console.log(this.getSurrounding(targetTile));
+          console.log(`row: ${targetTile.data.row} col: ${targetTile.data.col}`);
+          console.log(this.getSurrounding(targetTile));
         }, this);
+        */
       }
     }
   }
